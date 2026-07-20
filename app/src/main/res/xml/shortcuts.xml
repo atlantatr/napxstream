@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="shortcut_live"
+        android:enabled="true"
+        android:icon="@drawable/ic_live_tv"
+        android:shortcutShortLabel="@string/tab_live"
+        android:shortcutLongLabel="@string/tab_live">
+        <intent
+            android:action="com.napxstream.action.SHORTCUT_LIVE"
+            android:targetPackage="com.napxstream"
+            android:targetClass="com.napxstream.ui.login.LoginActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_vod"
+        android:enabled="true"
+        android:icon="@drawable/ic_movie"
+        android:shortcutShortLabel="@string/tab_vod"
+        android:shortcutLongLabel="@string/tab_vod">
+        <intent
+            android:action="com.napxstream.action.SHORTCUT_VOD"
+            android:targetPackage="com.napxstream"
+            android:targetClass="com.napxstream.ui.login.LoginActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_search"
+        android:enabled="true"
+        android:icon="@drawable/ic_search"
+        android:shortcutShortLabel="@string/tab_search"
+        android:shortcutLongLabel="@string/tab_search">
+        <intent
+            android:action="com.napxstream.action.SHORTCUT_SEARCH"
+            android:targetPackage="com.napxstream"
+            android:targetClass="com.napxstream.ui.login.LoginActivity" />
+    </shortcut>
+
+</shortcuts>

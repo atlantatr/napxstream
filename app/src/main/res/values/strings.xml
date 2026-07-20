@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Napxstream</string>
+
+    <!-- Giriş -->
+    <string name="login_title">Xtream Hesabınızla Giriş Yapın</string>
+    <string name="hint_host">Sunucu Adresi (örn: http://sunucu.com)</string>
+    <string name="hint_port">Port (opsiyonel)</string>
+    <string name="hint_username">Kullanıcı Adı</string>
+    <string name="hint_password">Şifre</string>
+    <string name="use_https">HTTPS kullan</string>
+    <string name="source_xtream">Xtream Codes</string>
+    <string name="source_m3u">M3U Playlist</string>
+    <string name="hint_m3u_url">M3U Playlist URL\'i</string>
+    <string name="hint_m3u_epg_url_optional">EPG (XMLTV) URL\'i — opsiyonel</string>
+    <string name="m3u_hint">M3U linkiniz genelde sağlayıcınızdan aldığınız .m3u veya .m3u8 uzantılı bir adrestir. EPG URL\'i girerseniz program rehberi de gösterilir.</string>
+    <string name="m3u_url_required">Lütfen M3U playlist URL\'i girin</string>
+    <string name="tmdb_section_title">TMDB ZENGİNLEŞTİRME (OPSİYONEL)</string>
+    <string name="hint_tmdb_api_key">TMDB API Anahtarı</string>
+    <string name="tmdb_hint">themoviedb.org üzerinden ücretsiz bir API anahtarı alıp buraya girerseniz, film/dizi detaylarında daha iyi afiş, puan, oyuncu kadrosu ve fragman gösterilir.</string>
+    <string name="save">Kaydet</string>
+    <string name="tmdb_key_saved">TMDB anahtarı kaydedildi</string>
+    <string name="cast">Oyuncular</string>
+    <string name="watch_trailer">Fragmanı İzle</string>
+    <string name="refresh_playlist">Playlist\'i Yenile</string>
+    <string name="playlist_refreshed">Playlist yenilendi</string>
+    <string name="login_button">Giriş Yap</string>
+
+    <!-- Ana menü -->
+    <string name="tab_live">Canlı TV</string>
+    <string name="tab_vod">Filmler</string>
+    <string name="tab_series">Diziler</string>
+    <string name="tab_favorites">Favoriler</string>
+    <string name="tab_search">Ara</string>
+    <string name="tab_settings">Ayarlar</string>
+
+    <!-- Genel -->
+    <string name="retry">Tekrar Dene</string>
+    <string name="loading">Yükleniyor…</string>
+    <string name="empty_list">İçerik bulunamadı</string>
+    <string name="add_favorite">Favorilere Ekle</string>
+    <string name="remove_favorite">Favorilerden Çıkar</string>
+    <string name="logout">Çıkış Yap</string>
+    <string name="search_hint">Kanal, film veya dizi ara…</string>
+    <string name="now_playing">Şimdi</string>
+    <string name="next_program">Sonraki</string>
+    <string name="all_categories">Tüm Kategoriler</string>
+    <string name="episodes">Bölümler</string>
+    <string name="seasons">Sezonlar</string>
+    <string name="continue_watching">İzlemeye Devam Et</string>
+    <string name="resume">Kaldığın Yerden Devam Et</string>
+    <string name="play_from_start">Baştan Oynat</string>
+
+    <!-- Ayarlar -->
+    <string name="account_section_title">HESAP BİLGİLERİ</string>
+    <string name="account_server">Sunucu</string>
+    <string name="account_username">Kullanıcı</string>
+    <string name="account_expiry">Bitiş Tarihi</string>
+    <string name="clear_cache">Önbelleği Temizle (favoriler ve izleme geçmişi hariç)</string>
+    <string name="logout_confirm_title">Çıkış yapılsın mı?</string>
+    <string name="logout_confirm_message">Hesap bilgileriniz bu cihazdan silinecek ve giriş ekranına yönlendirileceksiniz.</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="cache_cleared">Önbellek temizlendi</string>
+
+    <!-- Çoklu kanal EPG grid -->
+    <string name="tv_guide_title">TV Rehberi</string>
+    <string name="tv_guide_hint">Kaydırmak için parmağınızı sürükleyin · Bir programa dokunarak detay görün</string>
+    <string name="now">Şimdi</string>
+    <string name="program_time_range">%1$s – %2$s</string>
+    <string name="select_a_movie">Detayları görmek için bir film seçin</string>
+    <string name="select_a_series">Detayları görmek için bir dizi seçin</string>
+    <string name="watch_from_archive">Arşivden İzle</string>
+    <string name="continue_watching_title">İzlemeye Devam Et</string>
+    <string name="next_episode">Sıradaki Bölüm</string>
+    <string name="play_next_in">%1$d saniye sonra otomatik oynatılacak</string>
+    <string name="cancel_autoplay">İptal</string>
+    <string name="play_now">Şimdi Oynat</string>
+
+    <!-- Ebeveyn Kilidi -->
+    <string name="parental_section_title">EBEVEYN KİLİDİ</string>
+    <string name="parental_lock_toggle">Ebeveyn Kilidini Etkinleştir</string>
+    <string name="parental_show_adult_session">Yetişkin İçeriği Bu Oturumda Göster</string>
+    <string name="set_pin_title">4 Haneli PIN Belirle</string>
+    <string name="set_pin_message">Yetişkin içeriğe erişimi kısıtlamak için bir PIN belirleyin.</string>
+    <string name="enter_pin_title">PIN Girin</string>
+    <string name="pin_hint">4 haneli PIN</string>
+    <string name="pin_confirm_hint">PIN (tekrar)</string>
+    <string name="pin_mismatch">PIN\'ler eşleşmiyor</string>
+    <string name="pin_incorrect">Yanlış PIN</string>
+    <string name="pin_too_short">PIN 4 haneli olmalı</string>
+    <string name="ok">Tamam</string>
+    <string name="adult_content_locked">Bu içerik ebeveyn kilidiyle korunuyor</string>
+</resources>

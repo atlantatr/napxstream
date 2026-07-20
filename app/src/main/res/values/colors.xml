@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_dark">#0E1116</color>
+    <color name="surface_dark">#171B22</color>
+    <color name="surface_dark_focused">#232833</color>
+    <color name="primary">#8B5CF6</color>
+    <color name="primary_variant">#7C3AED</color>
+    <color name="accent">#22D3EE</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#A0A6B1</color>
+    <color name="error_red">#FF5252</color>
+    <color name="divider">#2A2F3A</color>
+    <color name="focus_border">#22D3EE</color>
+</resources>

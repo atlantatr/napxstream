@@ -1,0 +1,103 @@
+name: Android Build
+
+# main/master'a push ve her PR'da debug APK derler; "v*" etiketiyle push edildiğinde
+# (ör. v1.0.0) ayrıca imzalı release APK üretip GitHub Release'e yükler.
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: {}
+
+jobs:
+  debug-build:
+    name: Debug APK derle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: JDK 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK kur
+        uses: android-actions/setup-android@v3
+
+      # Not: Repoda henüz gradlew wrapper dosyaları (gradle-wrapper.jar) bulunmuyor.
+      # Bu action, projenin kendi wrapper'ı olmadan doğrudan Gradle'ı kurup çalıştırır.
+      # Yerelde `gradle wrapper` komutunu bir kez çalıştırıp wrapper dosyalarını commit
+      # ederseniz, bu adımı `./gradlew` ile değiştirip daha hızlı/tutarlı önbellekleme
+      # elde edebilirsiniz.
+      - name: Gradle kur
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Debug APK derle
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: APK'yı artifact olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: napxstream-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  release-build:
+    name: İmzalı Release APK derle
+    needs: debug-build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: JDK 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK kur
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle kur
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      # Keystore'u secrets'tan (base64) geri çözüp keystore.properties oluşturur.
+      # Gerekli repo secrets: KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+      - name: Keystore'u geri yükle
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > napxstream-release.keystore
+          cat > keystore.properties << EOF
+          storeFile=../napxstream-release.keystore
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
+
+      - name: Release APK derle
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Release APK'yı artifact olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: napxstream-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: GitHub Release'e ekle
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
