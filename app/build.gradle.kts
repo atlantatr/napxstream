@@ -69,8 +69,9 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
-    }
+    viewBinding = true
+    buildConfig = true
+}
 
     packaging {
         resources {
