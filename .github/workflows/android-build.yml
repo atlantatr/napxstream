@@ -37,7 +37,7 @@ jobs:
         with:
           gradle-version: "8.7"
 
-        - name: Debug APK derle
+      - name: Debug APK derle
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: APK'yı artifact olarak yükle
@@ -85,7 +85,7 @@ jobs:
           keyPassword=${{ secrets.KEY_PASSWORD }}
           EOF
 
-        - name: Release APK derle
+      - name: Release APK derle
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Release APK'yı artifact olarak yükle
