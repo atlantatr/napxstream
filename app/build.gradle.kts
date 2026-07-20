@@ -8,10 +8,9 @@ plugins {
     id("kotlin-parcelize")
 }
 
-// keystore.properties dosyası varsa release imzalama bilgilerini oradan okur.
-// Bu dosya repoya eklenmez (.gitignore'da); keystore.properties.example'a bakın.
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
+val hasKeystoreProperties = keystorePropertiesFile.exists()
 
 if (hasKeystoreProperties) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
