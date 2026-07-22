@@ -1,9 +1,6 @@
 package com.napxstream.ui.main
 
-import android.app.UiModeManager
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -35,11 +32,12 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        if (isTvDevice()) {
-            setupTvNavigation()
-        } else {
-            setupPhoneNavigation()
-        }
+        // isTvDevice() ile hangi layout'un (phone/TV) yüklendiği normalde uyumludur, ancak
+        // bazı Android TV box'larında/emülatörlerde UI modu raporlaması tutarsız olabiliyor.
+        // Bu yüzden ikisini de dene; null-safe çağrılar sayesinde yüklenmeyen taraf sessizce
+        // atlanır (NullPointerException riski olmadan).
+        setupPhoneNavigation()
+        setupTvNavigation()
 
         if (savedInstanceState == null) {
             showFragment(initialFragmentFromShortcut())
@@ -77,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPhoneNavigation() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav) ?: return
         bottomNav.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
                 R.id.nav_live -> createLiveFragment()
@@ -94,22 +92,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupTvNavigation() {
-        findViewById<android.widget.TextView>(R.id.navLive).setOnClickListener { showFragment(createLiveFragment()) }
-        findViewById<android.widget.TextView>(R.id.navVod).setOnClickListener { showFragment(createVodFragment()) }
-        findViewById<android.widget.TextView>(R.id.navSeries).setOnClickListener { showFragment(createSeriesFragment()) }
-        findViewById<android.widget.TextView>(R.id.navFavorites).setOnClickListener { showFragment(FavoritesFragment()) }
-        findViewById<android.widget.TextView>(R.id.navSearch).setOnClickListener { showFragment(SearchFragment()) }
-        findViewById<android.widget.TextView>(R.id.navSettings).setOnClickListener { showFragment(SettingsFragment()) }
+        // findViewById burada null dönebilir (ör. cihazın UI modu ile yüklenen layout
+        // uyuşmazsa) — null-safe çağrı ile bu durumda sessizce atlanır, NPE ile çökmez.
+        findViewById<android.widget.TextView>(R.id.navLive)?.setOnClickListener { showFragment(createLiveFragment()) }
+        findViewById<android.widget.TextView>(R.id.navVod)?.setOnClickListener { showFragment(createVodFragment()) }
+        findViewById<android.widget.TextView>(R.id.navSeries)?.setOnClickListener { showFragment(createSeriesFragment()) }
+        findViewById<android.widget.TextView>(R.id.navFavorites)?.setOnClickListener { showFragment(FavoritesFragment()) }
+        findViewById<android.widget.TextView>(R.id.navSearch)?.setOnClickListener { showFragment(SearchFragment()) }
+        findViewById<android.widget.TextView>(R.id.navSettings)?.setOnClickListener { showFragment(SettingsFragment()) }
     }
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
-    }
-
-    private fun isTvDevice(): Boolean {
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
-        return uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 }
