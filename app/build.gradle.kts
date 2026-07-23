@@ -71,6 +71,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        // AGP 8+'da varsayılan kapalı; SettingsFragment BuildConfig.VERSION_NAME kullanıyor.
+        buildConfig = true
     }
 
     packaging {
