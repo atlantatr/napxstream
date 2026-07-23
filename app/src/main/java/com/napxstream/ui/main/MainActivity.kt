@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.napxstream.R
 import com.napxstream.XtreamApp
 import com.napxstream.ui.favorites.FavoritesFragment
@@ -17,6 +18,7 @@ import com.napxstream.ui.settings.SettingsFragment
 import com.napxstream.ui.vod.VodFragment
 import com.napxstream.ui.vod.VodMasterDetailFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +31,10 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        // Normal giriş ekranından kaydedilmiş hesabı, yönetim panelinde görünmesi için
+        // çoklu hesap tablosuna (Room) da yansıtır — zaten kayıtlıysa hiçbir şey yapmaz.
+        lifecycleScope.launch { app.accountRepository.syncFromPrefsIfMissing() }
 
         setContentView(R.layout.activity_main)
 

@@ -10,9 +10,11 @@ import androidx.room.RoomDatabase
         FavoriteEntity::class,
         WatchProgressEntity::class,
         TmdbCacheEntity::class,
-        M3uEntryEntity::class
+        M3uEntryEntity::class,
+        AccountEntity::class,
+        BlockedChannelEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -21,6 +23,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun watchProgressDao(): WatchProgressDao
     abstract fun tmdbCacheDao(): TmdbCacheDao
     abstract fun m3uEntryDao(): M3uEntryDao
+    abstract fun accountDao(): AccountDao
+    abstract fun blockedChannelDao(): BlockedChannelDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -32,8 +36,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "napxstream.db"
                 )
-                    // v2 -> v3: TMDB önbelleği, M3U playlist önbelleği ve FavoriteEntity'ye
-                    // M3U kaynaklı favoriler için isM3u/streamUrl/m3uEntryId alanları eklendi.
+                    // v3 -> v4: çoklu hesap yönetimi (AccountEntity) ve kanal/kategori
+                    // engelleme (BlockedChannelEntity) — yerel yönetim paneli için eklendi.
                     // Uygulama henüz yayınlanmadığı için yıkıcı migration kullanılıyor.
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }

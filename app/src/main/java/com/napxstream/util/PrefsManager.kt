@@ -117,6 +117,32 @@ class PrefsManager(context: Context) {
 
     fun getM3uEpgUrl(): String? = prefs.getString(KEY_M3U_EPG_URL, null)
 
+    // ---------------- Uzaktan Yönetim Paneli (yerel ağ üzerinden) ----------------
+    fun isAdminServerEnabled(): Boolean = prefs.getBoolean(KEY_ADMIN_ENABLED, true)
+
+    fun setAdminServerEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_ADMIN_ENABLED, enabled).apply()
+    }
+
+    fun getAdminPort(): Int = prefs.getInt(KEY_ADMIN_PORT, 8090)
+
+    fun setAdminPort(port: Int) {
+        prefs.edit().putInt(KEY_ADMIN_PORT, port).apply()
+    }
+
+    /** Panelin kendi giriş şifresi — hesap şifrelerinden bağımsız, ayrı bir korumadır. */
+    fun getAdminPassword(): String? = prefs.getString(KEY_ADMIN_PASSWORD, null)?.takeIf { it.isNotBlank() }
+
+    fun setAdminPassword(password: String) {
+        prefs.edit().putString(KEY_ADMIN_PASSWORD, password).apply()
+    }
+
+    fun clearAdminPassword() {
+        prefs.edit().remove(KEY_ADMIN_PASSWORD).apply()
+    }
+
+    fun hasAdminPassword(): Boolean = !getAdminPassword().isNullOrBlank()
+
     companion object {
         private const val PREFS_NAME = "napxstream_secure_prefs"
         private const val KEY_HOST = "host"
@@ -130,6 +156,9 @@ class PrefsManager(context: Context) {
         private const val KEY_SOURCE_TYPE = "source_type"
         private const val KEY_M3U_URL = "m3u_url"
         private const val KEY_M3U_EPG_URL = "m3u_epg_url"
+        private const val KEY_ADMIN_ENABLED = "admin_server_enabled"
+        private const val KEY_ADMIN_PORT = "admin_server_port"
+        private const val KEY_ADMIN_PASSWORD = "admin_server_password"
         const val SOURCE_XTREAM = "xtream"
         const val SOURCE_M3U = "m3u"
     }

@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -8,12 +5,13 @@ plugins {
     id("kotlin-parcelize")
 }
 
+// keystore.properties dosyası varsa release imzalama bilgilerini oradan okur.
+// Bu dosya repoya eklenmez (.gitignore'da); keystore.properties.example'a bakın.
 val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
+val keystoreProperties = java.util.Properties()
 val hasKeystoreProperties = keystorePropertiesFile.exists()
-
 if (hasKeystoreProperties) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -69,9 +67,8 @@ android {
     }
 
     buildFeatures {
-    viewBinding = true
-    buildConfig = true
-}
+        viewBinding = true
+    }
 
     packaging {
         resources {
@@ -102,6 +99,9 @@ android {
 }
 
 dependencies {
+    // Yerel ağ üzerinden yönetim paneli (aynı Wi-Fi'daki cihazlardan tarayıcı ile erişim)
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
+
     // Core / UI
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

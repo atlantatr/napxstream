@@ -32,7 +32,11 @@ class LiveViewModel(private val repository: XtreamRepository) : ViewModel() {
         _categories.value = Resource.Loading
         viewModelScope.launch {
             repository.getLiveCategories(account)
-                .onSuccess { _categories.value = Resource.Success(com.napxstream.util.ParentalControlManager.filterCategories(it)) }
+                .onSuccess { categories ->
+                    val filtered = com.napxstream.util.ParentalControlManager.filterCategories(categories)
+                    val blockedIds = repository.getBlockedCategoryIds().toSet()
+                    _categories.value = Resource.Success(filtered.filter { it.categoryId !in blockedIds })
+                }
                 .onFailure { _categories.value = Resource.Error(it.message ?: "Hata") }
         }
     }
@@ -42,7 +46,11 @@ class LiveViewModel(private val repository: XtreamRepository) : ViewModel() {
         _channels.value = Resource.Loading
         viewModelScope.launch {
             repository.getLiveStreams(account, categoryId)
-                .onSuccess { _channels.value = Resource.Success(com.napxstream.util.ParentalControlManager.filterLiveStreams(it)) }
+                .onSuccess { streams ->
+                    val filtered = com.napxstream.util.ParentalControlManager.filterLiveStreams(streams)
+                    val blockedChannelIds = repository.getBlockedChannelIds().toSet()
+                    _channels.value = Resource.Success(filtered.filter { it.streamId.toString() !in blockedChannelIds })
+                }
                 .onFailure { _channels.value = Resource.Error(it.message ?: "Hata") }
         }
     }

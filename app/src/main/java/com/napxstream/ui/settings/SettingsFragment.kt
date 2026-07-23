@@ -1,17 +1,23 @@
 package com.napxstream.ui.settings
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.napxstream.BuildConfig
 import com.napxstream.R
 import com.napxstream.XtreamApp
+import com.napxstream.admin.AdminServerService
 import com.napxstream.databinding.FragmentSettingsBinding
 import com.napxstream.ui.login.LoginActivity
 import com.napxstream.util.ParentalControlManager
@@ -28,6 +34,11 @@ class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) startAdminServer() else Toast.makeText(requireContext(), "Bildirim izni olmadan sunucu bildirimi gösterilemez", Toast.LENGTH_SHORT).show()
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -83,6 +94,7 @@ class SettingsFragment : Fragment() {
         binding.logoutButton.setOnClickListener { confirmLogout(app) }
 
         setupParentalControls(app)
+        setupAdminServer(app)
 
         binding.clearCacheText.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -162,6 +174,75 @@ class SettingsFragment : Fragment() {
                 ParentalControlManager.lock()
             }
         }
+    }
+
+    private fun setupAdminServer(app: XtreamApp) {
+        val prefs = app.prefsManager
+
+        // Sunucu varsayılan olarak etkin ve otomatik başlar (bkz. XtreamApp.onCreate).
+        // Şifre opsiyoneldir: kullanıcı boş bırakırsa panel yerel ağda şifresiz çalışır.
+        binding.adminPasswordInput.setText(prefs.getAdminPassword() ?: "")
+        binding.adminPortInput.setText(prefs.getAdminPort().toString())
+        binding.adminEnableSwitch.isChecked = prefs.isAdminServerEnabled()
+        updateAdminAddressText(prefs)
+
+        if (prefs.isAdminServerEnabled()) {
+            requestNotificationPermissionThenStart()
+        }
+
+        binding.saveAdminPasswordButton.setOnClickListener {
+            val password = binding.adminPasswordInput.text.toString().trim()
+            val port = binding.adminPortInput.text.toString().toIntOrNull() ?: 8090
+            prefs.setAdminPort(port)
+            if (password.isBlank()) {
+                prefs.clearAdminPassword()
+                Toast.makeText(requireContext(), R.string.admin_password_removed, Toast.LENGTH_SHORT).show()
+            } else {
+                prefs.setAdminPassword(password)
+                Toast.makeText(requireContext(), R.string.admin_password_saved, Toast.LENGTH_SHORT).show()
+            }
+            if (prefs.isAdminServerEnabled()) startAdminServer() // portu/şifreyi yeni değerle uygula
+        }
+
+        binding.adminEnableSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.setAdminServerEnabled(isChecked)
+            if (isChecked) {
+                val port = binding.adminPortInput.text.toString().toIntOrNull() ?: 8090
+                prefs.setAdminPort(port)
+                requestNotificationPermissionThenStart()
+            } else {
+                AdminServerService.stop(requireContext())
+                Toast.makeText(requireContext(), R.string.admin_stopped, Toast.LENGTH_SHORT).show()
+                binding.adminAddressText.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun requestNotificationPermissionThenStart() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            startAdminServer()
+        }
+    }
+
+    private fun startAdminServer() {
+        val app = requireActivity().application as XtreamApp
+        AdminServerService.start(requireContext())
+        Toast.makeText(requireContext(), R.string.admin_started, Toast.LENGTH_SHORT).show()
+        updateAdminAddressText(app.prefsManager)
+    }
+
+    private fun updateAdminAddressText(prefs: com.napxstream.util.PrefsManager) {
+        if (!prefs.isAdminServerEnabled()) {
+            binding.adminAddressText.visibility = View.GONE
+            return
+        }
+        val ip = AdminServerService.getLocalIpAddress() ?: "cihaz-ip-adresi"
+        binding.adminAddressText.text = "${getString(R.string.admin_address_label)} http://$ip:${prefs.getAdminPort()}"
+        binding.adminAddressText.visibility = View.VISIBLE
     }
 
     private fun confirmLogout(app: XtreamApp) {

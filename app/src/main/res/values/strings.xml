@@ -24,6 +24,19 @@
     <string name="watch_trailer">Fragmanı İzle</string>
     <string name="refresh_playlist">Playlist\'i Yenile</string>
     <string name="playlist_refreshed">Playlist yenilendi</string>
+    <string name="admin_notification_title">Napxstream Yönetim Paneli Aktif</string>
+    <string name="admin_section_title">UZAKTAN YÖNETİM PANELİ</string>
+    <string name="admin_hint">Panel varsayılan olarak otomatik çalışır (uygulama açıldığında ve cihaz yeniden başladığında). Aynı Wi-Fi\'daki bir bilgisayar veya telefondan tarayıcıyla bağlanıp hesapları, ebeveyn kilidini ve kanal engellemeyi buradan yönetebilirsiniz. Güvenlik için aşağıdaki şifreyi not edin veya değiştirin.</string>
+    <string name="admin_enable">Yönetim Panelini Etkinleştir</string>
+    <string name="hint_admin_password">Panel Şifresi</string>
+    <string name="hint_admin_port">Port (varsayılan 8090)</string>
+    <string name="admin_address_label">Bağlantı adresi:</string>
+    <string name="admin_password_required">Önce bir panel şifresi belirleyin</string>
+    <string name="admin_password_optional_hint">Şifre opsiyoneldir. Boş bırakırsan panel şifresiz erişilebilir olur (sadece güvendiğin yerel ağda önerilir).</string>
+    <string name="admin_password_saved">Panel şifresi kaydedildi</string>
+    <string name="admin_password_removed">Panel artık şifresiz erişilebilir</string>
+    <string name="admin_started">Yönetim paneli başlatıldı</string>
+    <string name="admin_stopped">Yönetim paneli durduruldu</string>
     <string name="login_button">Giriş Yap</string>
 
     <!-- Ana menü -->

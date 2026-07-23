@@ -128,6 +128,23 @@ class XtreamRepository(private val db: AppDatabase) {
         db.watchProgressDao().getProgress(contentId)
     }
 
+    // ---------------- Engellenen kanal/kategori (yönetim paneli - bouquet kısıtlaması) ----------------
+    fun getBlockedChannelsLive() = db.blockedChannelDao().getAllLive()
+
+    suspend fun getBlockedChannels() = withContext(Dispatchers.IO) { db.blockedChannelDao().getAll() }
+
+    suspend fun getBlockedCategoryIds() = withContext(Dispatchers.IO) { db.blockedChannelDao().getBlockedCategoryIds() }
+
+    suspend fun getBlockedChannelIds() = withContext(Dispatchers.IO) { db.blockedChannelDao().getBlockedChannelIds() }
+
+    suspend fun blockChannel(entity: com.napxstream.data.local.BlockedChannelEntity) = withContext(Dispatchers.IO) {
+        db.blockedChannelDao().block(entity)
+    }
+
+    suspend fun unblockChannel(targetType: String, targetId: String) = withContext(Dispatchers.IO) {
+        db.blockedChannelDao().unblock(targetType, targetId)
+    }
+
     private suspend fun <T> safeCall(block: suspend () -> T): Result<T> = withContext(Dispatchers.IO) {
         try {
             Result.success(block())
