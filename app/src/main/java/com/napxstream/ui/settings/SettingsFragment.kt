@@ -238,11 +238,20 @@ class SettingsFragment : Fragment() {
     private fun updateAdminAddressText(prefs: com.napxstream.util.PrefsManager) {
         if (!prefs.isAdminServerEnabled()) {
             binding.adminAddressText.visibility = View.GONE
+            binding.adminQrCode.visibility = View.GONE
             return
         }
-        val ip = AdminServerService.getLocalIpAddress() ?: "cihaz-ip-adresi"
-        binding.adminAddressText.text = "${getString(R.string.admin_address_label)} http://$ip:${prefs.getAdminPort()}"
+        val ip = AdminServerService.getLocalIpAddress()
+        if (ip == null) {
+            binding.adminAddressText.visibility = View.GONE
+            binding.adminQrCode.visibility = View.GONE
+            return
+        }
+        val url = "http://$ip:${prefs.getAdminPort()}"
+        binding.adminAddressText.text = "${getString(R.string.admin_address_label)} $url"
         binding.adminAddressText.visibility = View.VISIBLE
+        binding.adminQrCode.setImageBitmap(com.napxstream.util.QrCodeGenerator.generate(url))
+        binding.adminQrCode.visibility = View.VISIBLE
     }
 
     private fun confirmLogout(app: XtreamApp) {

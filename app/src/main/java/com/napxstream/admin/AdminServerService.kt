@@ -7,9 +7,9 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.napxstream.R
 import com.napxstream.XtreamApp
@@ -22,6 +22,12 @@ import java.util.Collections
  * içinde çalıştırır — Android arka plan kısıtlamaları nedeniyle uygulama arka plandayken
  * de sunucunun yanıt vermeye devam etmesi için bu gereklidir. Bildirim, kullanıcının
  * sunucunun çalıştığını her zaman görmesini sağlar (gizli/sessiz bir arka kapı değildir).
+ *
+ * ÖNEMLİ: startForeground() bazı Android sürümlerinde/OEM'lerde (özellikle arka planda
+ * tetiklenen başlatmalarda) istisna fırlatabilir (ForegroundServiceStartNotAllowedException
+ * vb.). Bu istisna yakalanmazsa servis - ve dolayısıyla tüm uygulama süreci - her açılışta
+ * aynı noktada çöker (crash loop). Bu yüzden TÜM başlatma akışı try/catch ile korunur;
+ * başarısız olursa panel sadece devre dışı kalır, uygulama asla çökmez.
  */
 class AdminServerService : Service() {
 
@@ -29,30 +35,62 @@ class AdminServerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
+        try {
+            createNotificationChannel()
+        } catch (e: Exception) {
+            Log.w(TAG, "Bildirim kanalı oluşturulamadı: ${e.message}")
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return try {
+            startServerAndForeground()
+            START_STICKY
+        } catch (e: Exception) {
+            // Sunucu veya bildirim başlatılamadı — uygulamayı çökertmek yerine sessizce
+            // servisi durduruyoruz. Panel bu oturumda kullanılamaz ama uygulama normal
+            // çalışmaya devam eder.
+            Log.w(TAG, "Yönetim paneli başlatılamadı: ${e.message}")
+            stopSelf()
+            START_NOT_STICKY
+        }
+    }
+
+    private fun startServerAndForeground() {
         val app = application as XtreamApp
         val port = app.prefsManager.getAdminPort()
-        // Şifre opsiyoneldir — kullanıcı Ayarlar'dan isterse belirler. Boşsa panel
-        // yerel ağda şifresiz erişilebilir olur (bkz. AdminHttpServer.serve).
 
-        try {
-            server?.stop()
-            server = AdminHttpServer(applicationContext, port).apply { start(SOCKET_READ_TIMEOUT, false) }
-        } catch (e: Exception) {
-            stopSelf()
-            return START_NOT_STICKY
-        }
-
+        // Android, startForegroundService() çağrısından sonra startForeground()'un birkaç
+        // saniye içinde çağrılmasını zorunlu kılar; bu yüzden bildirimi HEMEN gösteriyoruz.
+        // Asıl HTTP sunucusunu (birkaç kısa yeniden deneme ile) ayrı bir thread'de
+        // başlatıyoruz ki hem bu kural asla ihlal edilmesin hem de ana thread bloklanmasın —
+        // kullanıcının panele erişmek için "bir süre beklemesi" gereken gecikme buradan
+        // kaynaklanıyordu.
         startForeground(NOTIFICATION_ID, buildNotification(port))
-        return START_STICKY
+
+        Thread {
+            server?.stop()
+            server = null
+            for (attempt in 1..5) {
+                try {
+                    server = AdminHttpServer(applicationContext, port).apply { start(SOCKET_READ_TIMEOUT, false) }
+                    return@Thread
+                } catch (e: Exception) {
+                    Log.w(TAG, "Sunucu başlatma denemesi $attempt başarısız: ${e.message}")
+                    Thread.sleep(150L * attempt)
+                }
+            }
+            Log.e(TAG, "Yönetim paneli sunucusu birden fazla denemeye rağmen başlatılamadı")
+        }.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        server?.stop()
+        try {
+            server?.stop()
+        } catch (e: Exception) {
+            // yoksay
+        }
         server = null
     }
 
@@ -86,6 +124,7 @@ class AdminServerService : Service() {
     }
 
     companion object {
+        private const val TAG = "AdminServerService"
         private const val CHANNEL_ID = "admin_server_channel"
         private const val NOTIFICATION_ID = 4201
         private const val SOCKET_READ_TIMEOUT = 30000
@@ -109,16 +148,27 @@ class AdminServerService : Service() {
         }
 
         fun start(context: Context) {
-            val intent = Intent(context, AdminServerService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
+            try {
+                val intent = Intent(context, AdminServerService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                // Bazı Android sürümleri/OEM'ler belirli bağlamlardan (ör. BOOT_COMPLETED,
+                // Application.onCreate) ön plan servisi başlatmayı reddedebilir. Bu durumda
+                // sessizce vazgeçiyoruz — uygulamanın geri kalanı etkilenmez.
+                Log.w(TAG, "AdminServerService başlatılamadı: ${e.message}")
             }
         }
 
         fun stop(context: Context) {
-            context.stopService(Intent(context, AdminServerService::class.java))
+            try {
+                context.stopService(Intent(context, AdminServerService::class.java))
+            } catch (e: Exception) {
+                // yoksay
+            }
         }
     }
 }

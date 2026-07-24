@@ -106,6 +106,8 @@ android {
 dependencies {
     // Yerel ağ üzerinden yönetim paneli (aynı Wi-Fi'daki cihazlardan tarayıcı ile erişim)
     implementation("org.nanohttpd:nanohttpd:2.3.1")
+    // Yönetim paneli QR kodu üretimi (tarama değil, sadece yerel QR görseli oluşturma)
+    implementation("com.google.zxing:core:3.5.3")
 
     // Core / UI
     implementation("androidx.core:core-ktx:1.13.1")

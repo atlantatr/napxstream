@@ -25,6 +25,8 @@
     <string name="refresh_playlist">Playlist\'i Yenile</string>
     <string name="playlist_refreshed">Playlist yenilendi</string>
     <string name="admin_notification_title">Napxstream Yönetim Paneli Aktif</string>
+    <string name="admin_panel_label">YÖNETİM PANELİ</string>
+    <string name="admin_panel_qr_hint">Bu QR kodu telefon/tablet kamerasıyla okutarak panele bağlanabilirsiniz</string>
     <string name="admin_section_title">UZAKTAN YÖNETİM PANELİ</string>
     <string name="admin_hint">Panel varsayılan olarak otomatik çalışır (uygulama açıldığında ve cihaz yeniden başladığında). Aynı Wi-Fi\'daki bir bilgisayar veya telefondan tarayıcıyla bağlanıp hesapları, ebeveyn kilidini ve kanal engellemeyi buradan yönetebilirsiniz. Güvenlik için aşağıdaki şifreyi not edin veya değiştirin.</string>
     <string name="admin_enable">Yönetim Panelini Etkinleştir</string>

@@ -207,5 +207,54 @@
             android:visibility="gone"
             tools:text="Giriş başarısız" />
 
+        <!-- Yönetim Paneli bilgisi — hesap girişi yapılmadan da her zaman gösterilir -->
+        <LinearLayout
+            android:id="@+id/adminPanelSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_list_item"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_panel_label"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/loginAdminAddressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/accent"
+                android:textSize="14sp"
+                tools:text="http://192.168.1.24:8090" />
+
+            <ImageView
+                android:id="@+id/loginAdminQrCode"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/white"
+                android:contentDescription="@string/admin_panel_label"
+                android:padding="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/admin_panel_qr_hint"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

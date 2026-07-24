@@ -8,10 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.napxstream.XtreamApp
+import com.napxstream.admin.AdminServerService
 import com.napxstream.data.api.XtreamAccount
 import com.napxstream.databinding.ActivityLoginBinding
 import com.napxstream.ui.main.MainActivity
 import com.napxstream.util.Constants
+import com.napxstream.util.QrCodeGenerator
 import com.napxstream.util.Resource
 import com.napxstream.util.ViewModelFactory
 import kotlinx.coroutines.launch
@@ -36,6 +38,8 @@ class LoginActivity : AppCompatActivity() {
             goToMain()
             return
         }
+
+        setupAdminPanelInfo(app)
 
         viewModel = ViewModelProvider(
             this,
@@ -78,6 +82,22 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /** Login ekranında panelin IP:port adresini ve tarayarak açılabilecek QR kodunu gösterir. */
+    private fun setupAdminPanelInfo(app: XtreamApp) {
+        if (!app.prefsManager.isAdminServerEnabled()) {
+            binding.adminPanelSection.visibility = View.GONE
+            return
+        }
+        val ip = AdminServerService.getLocalIpAddress()
+        if (ip == null) {
+            binding.adminPanelSection.visibility = View.GONE
+            return
+        }
+        val url = "http://$ip:${app.prefsManager.getAdminPort()}"
+        binding.loginAdminAddressText.text = url
+        binding.loginAdminQrCode.setImageBitmap(QrCodeGenerator.generate(url))
     }
 
     private fun submitXtream() {
